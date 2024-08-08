@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeDuelHelp</title>
+    <style>
+        body {
+            font-family: 'Roboto', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            background-color: white;
+        }
+
+        .InstructorWrapper {
+            width: 80vw;
+            background-color: #EE8329;
+            padding: 2vh 5vw;
+            padding-bottom: 5vh;
+            margin-top: 5vh;
+            margin-left: 4vw;
+            border-radius: 100px;
+            border: 5px solid #CD5241;
+            color: aliceblue;
+        }
+
+        .TitleBanner {
+            width: 101vw;
+            height: 25rem;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: -1em 0 0 -1em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .TitleBanner::before {
+            content: "";
+            position: absolute;
+            background-image: url("pokemon-banner.png");
+            width: 101vw;
+            height: 25rem;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .TitleBanner::after {
+            content: "";
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 101vw;
+            height: 25rem;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .headTitle {
+            margin-left: -5%;
+            height: 10rem;
+            width: 35vw;
+            color: aliceblue;
+            font-size: 10vw;
+            text-align: center;
+            font-family: 'Roboto', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        .Instructions {
+            color: aliceblue;
+        }
+
+        .Welcome {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        .Welcome>h1 {
+            font-size: 3em;
+            padding: 0;
+        }
+
+        .ChariImage {
+            margin-right: -10vw;
+            height: 30vw;
+            width: 30vw;
+        }
+
+        .ChariImage>img {
+            height: 30vw;
+            width: 30vw;
+        }
+
+        .BlastpicImage {
+            margin-left: -10vw;
+            height: 30vw;
+            width: 30vw;
+        }
+
+        .BlastpicImage>img {
+            height: 30vw;
+            width: 30vw;
+        }
+
+        .CardWrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn {
+            background-color: #FF7B73;
+            color: white;
+            padding: 1em 5em;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 20px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn:hover {
+            background-color: #e36c66;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 10vh); /* Adjust height to avoid footer */
+            pointer-events: none;
+            background: transparent;
+        }
+
+        .drop-button:hover{
+
+            box-shadow: 0 0.5em 0.5em -0.4em white;
+            transform: translateY(-0.25em);
+        }
+        .drop-button {
+            
+            top: 10px;
+            left: 50%;
+            padding: 1vh 5vw;
+            font-size: 16px;
+            cursor: pointer;
+            font-size: 2.5em;
+            background-color: transparent;
+            color: white;
+            border: none;
+            margin-right: 33vw;
+            margin-left: 36vw;
+            
+        }
+
+        .FixedFooter {
+
+            width: 101vw;
+            height: 10vh;
+            position: fixed;
+            bottom: 0;
+            background-color: #00000087;
+            margin-left: -1vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: aliceblue;
+        }
+        .DownloadPanel{
+
+            display: flex;
+            position: relative;
+            align-items: center;
+            border: 3px solid rgb(251, 42, 42);
+            border-radius: 2em;
+            width:89vw;
+            margin-left:5vw;
+            margin-top: 3em;
+            background-color: rgb(251, 110, 110);
+            
+        }
+        .DownloadPanelWrapper{
+
+            width: 100vw;
+            justify-content: center;
+            
+        }
+        #DownloadPanelTitle{
+
+            width: 20vw;
+            padding:10px 10px;
+            margin-left:5vw;
+            color:white;
+            text-wrap: nowrap;
+        }
+        .DownloadButton{
+
+            margin-right: 4vw;
+            padding: 1em 7vw;
+            text-decoration: none;
+            border: none;
+            border-radius: 1em;
+            font-size: medium;
+            color: white;
+            background-color: #CD5241;
+            transition: 700ms;
+            margin-left: 35vw;
+            
+        }
+        .DownloadButtonAni{
+
+            background-size:cover;
+            background-repeat: no-repeat;
+            width: 9vw;
+            height: 9vw; 
+            background-image: url('images/transperantPikachu.gif');
+            display: none;
+            
+        }
+        .DownloadButton:hover{
+
+            border: 2px solid rgb(252, 252, 252) ;
+            margin-left: 30vw;
+        }
+        .DownloadButton:hover + .DownloadButtonAni {
+        
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="TitleBanner">
+        <span class="headTitle">PokéDuel</span>
+    </div>
+    <div class="DownloadPanelWrapper">
+        <div class="DownloadPanel">
+
+            <div id="DownloadPanelTitle">
+                <h1>Get Pokéduel now!</h1>
+                <p>Pokéball is only available for Windows OS.</p>
+            </div>
+            <button class="DownloadButton">Download</button>
+            <div class="DownloadButtonAni"></div>
+        </div>
+    </div>
+    
+    <div class="InstructorWrapper">
+        <div class="Welcome">
+            <h1>Welcome to PokéDuel!</h1>
+        </div>
+        <div class="CardWrapper">
+            <div class="Instructions">
+                <h2>Step into the world of Pokémon with PokéDuel, an exciting battle game featuring the original 151 Pokémon from Generation 1. Here's how to get started:</h2>
+                <h3>1) Choose Your Pokémon: Select your favorite Pokémon from the Gen 1 roster to be your battle companion.</h3>
+                <h3>2) Battle a Random Opponent: Face off against a randomly selected Gen 1 Pokémon in an epic duel.</h3>
+                <h3>3) Survive to Win: Use strategy and skill to outlast your opponent. The Pokémon that survives until the end is the winner!</h3>
+                <h2>Are you ready to become the ultimate Pokémon master? Let the battles begin!</h2>
+            </div>
+            <div class="ChariImage">
+                <img src="charipic.png" alt="Charizard">
+            </div>
+        </div>
+    </div>
+
+    <div class="InstructorWrapper" style="background-color: #5A8BCD; border-color: #2062AC;">
+        <div class="Welcome">
+            <h1>About Pokémon</h1>
+        </div>
+        <div class="CardWrapper">
+            <div class="BlastpicImage">
+                <img src="Blastpic.png" alt="Blastoise">
+            </div>
+            <div class="Instructions">
+                <h2>Pokémon, short for "Pocket Monsters," are fictional creatures that humans, known as Pokémon Trainers, catch and train to battle each other for sport. Here are some key points about Pokémon:</h2>
+                <p>1) <b>Origins:</b> Pokémon was created by Satoshi Tajiri and Ken Sugimori and was first released as a pair of video games for the original Game Boy in 1996.</p>
+                <p>2) <b>Types:</b> Each Pokémon belongs to one or two of 18 different types, such as Fire, Water, Grass, and Electric. These types determine the strengths and weaknesses of each Pokémon in battle.</p>
+                <p>3) <b>Evolution:</b> Many Pokémon can evolve into a stronger form, gaining new abilities and increased stats.</p>
+                <p>4) <b>Moves:</b> Pokémon can learn a variety of moves, each associated with a particular type. Moves have different effects in battle, from causing damage to inflicting status conditions.</p>
+                <p>5) <b>Stats:</b> Each Pokémon has six key stats that affect its performance in battle: HP (Health Points), Attack, Defense, Special Attack, Special Defense, and Speed.</p>
+                <h2>In Poke Duel, you'll get to experience the thrill of battling with these classic creatures from the original Generation 1 lineup. Whether you're a seasoned Pokémon Trainer or new to the world of Pokémon, there's always something exciting to discover!</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="InstructorWrapper" style="background-color: #5AD5C5; border-color: #107B6A;">
+        <div class="Welcome">
+            <h1>Pokémon and their Attacks</h1>
+        </div>
+        <div class="CardWrapper">
+            <div class="Instructions">
+                <h2>In the world of Pokémon, each creature has a unique set of moves they can learn. These moves fall into different categories and types, affecting how they perform in battle.</h2>
+                <h2>Below are some sources to get information about Pokémon and their attacks:</h2>
+                <button class="btn" onclick="navigateToAttackPage()">Attacks</button>
+                <button class="btn" onclick="navigateToPokemonPage()">Pokémon</button>
+            </div>
+            <div class="ChariImage">
+                <img src="Venupic.png" alt="Venusaur">
+            </div>
+        </div>
+    </div>
+
+    <div class="FixedFooter">
+        <button class="drop-button">PokéDuel</button>
+        <a href="www.linkedin.com/in/varad-marne-a1a840293" target="_blank">
+            <img src="images/linkedin.svg" alt="LinkedIn" style="width: 40px; height: 40px;">
+          </a>
+          
+    </div>
+
+    <canvas id="pokeballs"></canvas>
+    <script src="matter.min.js"></script>
+    <script>
+        // Pokéball texture URLs
+        const pokeballTextures = [
+            'images/image-removebg-preview (10) (2).png',
+            'images/image-removebg-preview (1).png',
+            'images/image-removebg-preview (2) (1).png',
+            'images/image-removebg-preview (3) (1).png',
+            'images/image-removebg-preview (4) (1).png',
+            'images/image-removebg-preview (5) (1).png',
+            'images/image-removebg-preview (6) (1).png',
+            'images/image-removebg-preview (11) (1).png'
+        ];
+        // Create an engine
+        const engine = Matter.Engine.create();
+        const world = engine.world;
+
+        // Create a renderer
+        const render = Matter.Render.create({
+            element: document.body,
+            canvas: document.getElementById('pokeballs'),
+            engine: engine,
+            options: {
+                width: window.innerWidth,
+                height: (window.innerHeight-10 * window.innerHeight / 170), // Adjust height to avoid footer
+                wireframes: false,
+                background: 'transparent'
+            }
+        });
+
+        // Function to get a random Pokéball texture
+        const getRandomTexture = () => {
+            const randomIndex = Math.floor(Math.random() * pokeballTextures.length);
+            return pokeballTextures[randomIndex];
+        };
+
+        // Create Pokéballs (circles) with random textures
+        const createPokeball = (x, y) => {
+            return Matter.Bodies.circle(x, y, 20, {
+                restitution: 0.8,
+                render: {
+                    sprite: {
+                        texture: getRandomTexture(),
+                        xScale: 1,
+                        yScale: 1
+                    }
+                }
+            });
+        };
+
+        // Add a new Pokéball at the top of the screen
+        const dropPokeball = () => {
+            const x = Math.random() * window.innerWidth;
+            const pokeball = createPokeball(x, 0);
+            Matter.World.add(world, pokeball);
+        };
+
+        // Create static ground (footer boundary)
+        const ground = Matter.Bodies.rectangle(window.innerWidth / 2, window.innerHeight - 50, window.innerWidth, 10, {
+            isStatic: true,
+            render: {
+                visible: false
+            }
+        });
+
+        // Mouse control
+        const mouse = Matter.Mouse.create(render.canvas);
+        const mouseConstraint = Matter.MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: {
+                stiffness: 0.2,
+                render: {
+                    visible: false
+                }
+            }
+        });
+
+        Matter.World.add(world, mouseConstraint);
+
+        // Keep the mouse in sync with rendering
+        render.mouse = mouse;
+
+        Matter.World.add(world, ground);
+
+        // Run the engine
+        Matter.Engine.run(engine);
+
+        // Run the renderer
+        Matter.Render.run(render);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            render.canvas.width = window.innerWidth;
+            render.canvas.height = window.innerHeight - 11 * window.innerHeight / 100; // Adjust height to avoid footer
+            Matter.Body.setPosition(ground, { x: window.innerWidth / 2, y: window.innerHeight - 50 });
+        });
+
+        // Attach the dropPokeball function to the button click event
+        document.querySelector('.drop-button').addEventListener('click', dropPokeball);
+
+        function navigateToAttackPage() {
+            window.location.href = 'attackInfo.html';
+        }
+
+        function navigateToPokemonPage() {
+            window.location.href = 'pokemonInformation.html';
+        }
+    </script>
+</body>
+</html>
