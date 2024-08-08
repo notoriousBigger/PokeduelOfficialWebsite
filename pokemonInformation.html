@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Stats</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('images/pokemon_background.jpg');
+            background-size: cover;
+            background-color: #fff; /* Default background color */
+            color: #333;
+            font-family: 'Verdana', sans-serif;
+            text-align: center;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .pokemon-stats {
+            margin-top: 20px;
+        }
+        .pokemon-stats .card {
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .pokemon-stats .card .card-body {
+            padding: 20px;
+            text-align: center;
+        }
+        .pokemon-image {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+        }
+        .search-form input {
+            width: calc(100% - 50px);
+            border: 2px solid #fda085;
+            border-radius: 5px;
+        }
+        .search-form button {
+            margin-top: 10px;
+            width: 100px;
+            background-color: #fda085;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+        }
+        .search-form button:hover {
+            background-color: #fc7f50;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Pokémon Stats</h1>
+        <div class="search-form text-center">
+            <input type="text" id="pokemonName" class="form-control d-inline-block" placeholder="Enter Pokémon Name">
+            <button class="btn" onclick="searchPokemon()">Search</button>
+        </div>
+        <div class="pokemon-stats" id="pokemonStats"></div>
+    </div>
+
+    <script>
+const pokemonStats = {
+    "Pikachu": { 
+        hp: 35, attack: 55, defense: 40, specialAttack: 50, specialDefense: 50, speed: 90,
+        type: "Electric",
+        moves: [
+            { name: "Thunder Shock", description: "An electric shock attack that may also leave the foe paralyzed." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Iron Tail", description: "The foe is slammed with a steel-hard tail. It may also lower the target’s Defense stat." },
+            { name: "Electro Ball", description: "The user hurls an electric orb at the target. The faster the user is than the target, the greater the move’s power." }
+        ]
+    },
+    "Charmander": { 
+        hp: 39, attack: 52, defense: 43, specialAttack: 60, specialDefense: 50, speed: 65,
+        type: "Fire",
+        moves: [
+            { name: "Ember", description: "A weak fire attack that may inflict a burn." },
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Flamethrower", description: "The foe is scorched with an intense blast of fire. The target may also be left with a burn." },
+            { name: "Dragon Claw", description: "Sharp, huge claws hook and slash the foe quickly and with great power." }
+        ]
+    },
+    "Bulbasaur": { 
+        hp: 45, attack: 49, defense: 49, specialAttack: 65, specialDefense: 65, speed: 45,
+        type: "Grass",
+        moves: [
+            { name: "Vine Whip", description: "The foe is struck with slender, whip-like vines to inflict damage." },
+            { name: "Razor Leaf", description: "Sharp-edged leaves are launched to slash at the foe. It has a high critical-hit ratio." },
+            { name: "Seed Bomb", description: "The user slams a barrage of hard-shelled seeds down on the foe from above." },
+            { name: "Solar Beam", description: "A two-turn attack. The user gathers light, then blasts a bundled beam on the next turn." }
+        ]
+    },
+    "Squirtle": { 
+        hp: 44, attack: 48, defense: 65, specialAttack: 50, specialDefense: 64, speed: 43,
+        type: "Water",
+        moves: [
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." }
+        ]
+    },
+    "Caterpie": { 
+        hp: 45, attack: 30, defense: 35, specialAttack: 20, specialDefense: 20, speed: 45,
+        type: "Bug",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "String Shot", description: "The foe is bound with silk blown from the user's mouth. It reduces the target's Speed stat." }
+        ]
+    },
+    "Metapod": { 
+        hp: 50, attack: 20, defense: 55, specialAttack: 25, specialDefense: 25, speed: 30,
+        type: "Bug",
+        moves: [
+            { name: "Harden", description: "The user stiffens all the muscles in its body to raise its Defense stat." }
+        ]
+    },
+    "Butterfree": { 
+        hp: 60, attack: 45, defense: 50, specialAttack: 90, specialDefense: 80, speed: 70,
+        type: "Bug",
+        moves: [
+            { name: "Confusion", description: "The target is hit by a weak telekinetic force. It may also leave the target confused." },
+            { name: "Gust", description: "A gust of wind is whipped up by wings and launched at the foe to inflict damage." },
+            { name: "Psybeam", description: "The foe is attacked with a peculiar ray. It may also cause confusion." },
+            { name: "Silver Wind", description: "The foe is attacked with powdery scales blown by wind. It may also raise all the user's stats." }
+        ]
+    },
+    "Weedle": { 
+        hp: 40, attack: 35, defense: 30, specialAttack: 20, specialDefense: 20, speed: 50,
+        type: "Bug",
+        moves: [
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." },
+            { name: "String Shot", description: "The foe is bound with silk blown from the user's mouth. It reduces the target's Speed stat." }
+        ]
+    },
+    "Kakuna": { 
+        hp: 45, attack: 25, defense: 50, specialAttack: 25, specialDefense: 25, speed: 35,
+        type: "Bug",
+        moves: [
+            { name: "Harden", description: "The user stiffens all the muscles in its body to raise its Defense stat." }
+        ]
+    },
+    "Beedrill": { 
+        hp: 65, attack: 90, defense: 40, specialAttack: 45, specialDefense: 80, speed: 75,
+        type: "Bug",
+        moves: [
+            { name: "Twineedle", description: "The user damages the foe twice in succession by jabbing it with a pair of needles." },
+            { name: "Poison Jab", description: "The user stabs the foe with a poisoned stinger. It may also poison the target." },
+            { name: "Fury Attack", description: "The user jabs the foe repeatedly with its horn or beak two to five times in a row." },
+            { name: "Pin Missile", description: "Sharp pins are fired to strike two to five times in a row." }
+        ]
+    },
+    "Pidgey": { 
+        hp: 40, attack: 45, defense: 40, specialAttack: 35, specialDefense: 35, speed: 56,
+        type: "Normal",
+        moves: [
+            { name: "Gust", description: "A gust of wind is whipped up by wings and launched at the foe to inflict damage." },
+            { name: "Sand-Attack", description: "The user kicks up sand at the foe's face to reduce its accuracy." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Wing Attack", description: "The foe is struck with large, imposing wings spread wide to inflict damage." }
+        ]
+    },
+    "Pidgeotto": { 
+        hp: 63, attack: 60, defense: 55, specialAttack: 50, specialDefense: 50, speed: 71,
+        type: "Normal",
+        moves: [
+            { name: "Gust", description: "A gust of wind is whipped up by wings and launched at the foe to inflict damage." },
+            { name: "Sand-Attack", description: "The user kicks up sand at the foe's face to reduce its accuracy." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Wing Attack", description: "The foe is struck with large, imposing wings spread wide to inflict damage." }
+        ]
+    },
+    "Pidgeot": { 
+        hp: 83, attack: 80, defense: 75, specialAttack: 70, specialDefense: 70, speed: 101,
+        type: "Normal",
+        moves: [
+            { name: "Gust", description: "A gust of wind is whipped up by wings and launched at the foe to inflict damage." },
+            { name: "Sand-Attack", description: "The user kicks up sand at the foe's face to reduce its accuracy." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Wing Attack", description: "The foe is struck with large, imposing wings spread wide to inflict damage." }
+        ]
+    },
+    "Rattata": { 
+        hp: 30, attack: 56, defense: 35, specialAttack: 25, specialDefense: 35, speed: 72,
+        type: "Normal",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Hyper Fang", description: "The user bites hard on the foe with its sharp front fangs. It may also make the target flinch." }
+        ]
+    },
+    "Raticate": { 
+        hp: 55, attack: 81, defense: 60, specialAttack: 50, specialDefense: 70, speed: 97,
+        type: "Normal",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Hyper Fang", description: "The user bites hard on the foe with its sharp front fangs. It may also make the target flinch." }
+        ]
+    },
+    "Spearow": { 
+        hp: 40, attack: 60, defense: 30, specialAttack: 31, specialDefense: 31, speed: 70,
+        type: "Normal",
+        moves: [
+            { name: "Peck", description: "The target is jabbed with a sharply pointed beak or horn." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Leer", description: "The foe is given an intimidating leer with sharp eyes. The target's Defense stat is reduced." },
+            { name: "Fury Attack", description: "The user jabs the foe repeatedly with its horn or beak two to five times in a row." }
+        ]
+    },
+    "Fearow": { 
+        hp: 65, attack: 90, defense: 65, specialAttack: 61, specialDefense: 61, speed: 100,
+        type: "Normal/Flying",
+        moves: [
+            { name: "Peck", description: "The target is jabbed with a sharply pointed beak or horn." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Leer", description: "The foe is given an intimidating leer with sharp eyes. The target's Defense stat is reduced." },
+            { name: "Fury Attack", description: "The user jabs the foe repeatedly with its horn or beak two to five times in a row." }
+        ]
+    },
+    "Ekans": { 
+        hp: 35, attack: 60, defense: 44, specialAttack: 40, specialDefense: 54, speed: 55,
+        type: "Poison",
+        moves: [
+            { name: "Wrap", description: "A long body, vines, etc., are used to wrap and squeeze the target for four to five turns." },
+            { name: "Leer", description: "The foe is given an intimidating leer with sharp eyes. The target's Defense stat is reduced." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." }
+        ]
+    },
+    "Arbok": { 
+        hp: 60, attack: 85, defense: 69, specialAttack: 65, specialDefense: 79, speed: 80,
+        type: "Poison",
+        moves: [
+            { name: "Wrap", description: "A long body, vines, etc., are used to wrap and squeeze the target for four to five turns." },
+            { name: "Leer", description: "The foe is given an intimidating leer with sharp eyes. The target's Defense stat is reduced." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." }
+        ]
+    },
+    "Pikachu": { 
+        hp: 35, attack: 55, defense: 40, specialAttack: 50, specialDefense: 50, speed: 90,
+        type: "Electric",
+        moves: [
+            { name: "Thunder Shock", description: "An electric shock attack that may also leave the foe paralyzed." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Iron Tail", description: "The foe is slammed with a steel-hard tail. It may also lower the target’s Defense stat." },
+            { name: "Electro Ball", description: "The user hurls an electric orb at the target. The faster the user is than the target, the greater the move’s power." }
+        ]
+    },
+    "Raichu": { 
+        hp: 60, attack: 90, defense: 55, specialAttack: 90, specialDefense: 80, speed: 110,
+        type: "Electric",
+        moves: [
+            { name: "Thunder Shock", description: "An electric shock attack that may also leave the foe paralyzed." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Iron Tail", description: "The foe is slammed with a steel-hard tail. It may also lower the target’s Defense stat." },
+            { name: "Electro Ball", description: "The user hurls an electric orb at the target. The faster the user is than the target, the greater the move’s power." }
+        ]
+    },
+    "Sandshrew": { 
+        hp: 50, attack: 75, defense: 85, specialAttack: 20, specialDefense: 30, speed: 40,
+        type: "Ground",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Defense Curl", description: "The user curls up to increase its Defense stat." },
+            { name: "Sand Attack", description: "The user kicks up sand at the foe's face to reduce its accuracy." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." }
+        ]
+    },
+    "Sandslash": { 
+        hp: 75, attack: 100, defense: 110, specialAttack: 45, specialDefense: 55, speed: 65,
+        type: "Ground",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Defense Curl", description: "The user curls up to increase its Defense stat." },
+            { name: "Sand Attack", description: "The user kicks up sand at the foe's face to reduce its accuracy." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." }
+        ]
+    },
+    "Nidoran♀": { 
+        hp: 55, attack: 47, defense: 52, specialAttack: 40, specialDefense: 40, speed: 41,
+        type: "Poison",
+        moves: [
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." }
+        ]
+    },
+    "Nidorina": { 
+        hp: 70, attack: 62, defense: 67, specialAttack: 55, specialDefense: 55, speed: 56,
+        type: "Poison",
+        moves: [
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." }
+        ]
+    },
+    "Nidoqueen": { 
+        hp: 90, attack: 92, defense: 87, specialAttack: 75, specialDefense: 85, speed: 76,
+        type: "Poison",
+        moves: [
+            { name: "Body Slam", description: "The user drops onto the target with its full body weight. It may also cause paralysis." },
+            { name: "Earthquake", description: "The user sets off an earthquake that strikes all Pokémon in battle." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." },
+            { name: "Double Kick", description: "The foe is quickly kicked twice in succession using both feet." }
+        ]
+    },
+    "Nidoran♂": { 
+        hp: 46, attack: 57, defense: 40, specialAttack: 40, specialDefense: 40, speed: 50,
+        type: "Poison",
+        moves: [
+            { name: "Leer", description: "The foe is given an intimidating leer with sharp eyes. The target's Defense stat is reduced." },
+            { name: "Peck", description: "The target is jabbed with a sharply pointed beak or horn." },
+            { name: "Focus Energy", description: "The user takes a deep breath and focuses so that critical hits land more easily." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." }
+        ]
+    },
+    "Nidorino": { 
+        hp: 61, attack: 72, defense: 57, specialAttack: 55, specialDefense: 55, speed: 65,
+        type: "Poison",
+        moves: [
+            { name: "Leer", description: "The foe is given an intimidating leer with sharp eyes. The target's Defense stat is reduced." },
+            { name: "Peck", description: "The target is jabbed with a sharply pointed beak or horn." },
+            { name: "Focus Energy", description: "The user takes a deep breath and focuses so that critical hits land more easily." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." }
+        ]
+    },
+    "Nidoking": { 
+        hp: 81, attack: 102, defense: 77, specialAttack: 85, specialDefense: 75, speed: 85,
+        type: "Poison",
+        moves: [
+            { name: "Body Slam", description: "The user drops onto the target with its full body weight. It may also cause paralysis." },
+            { name: "Earthquake", description: "The user sets off an earthquake that strikes all Pokémon in battle." },
+            { name: "Poison Sting", description: "The user stabs the foe with a poisonous stinger. It may also poison the target." },
+            { name: "Double Kick", description: "The foe is quickly kicked twice in succession using both feet." }
+        ]
+    },
+    "Clefairy": { 
+        hp: 70, attack: 45, defense: 48, specialAttack: 60, specialDefense: 65, speed: 35,
+        type: "Fairy",
+        moves: [
+            { name: "Pound", description: "The target is physically pounded with a long tail or a foreleg, etc." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Sing", description: "A soothing lullaby is sung in a calming voice that puts the target into a deep slumber." },
+            { name: "Double Slap", description: "The target is slapped repeatedly, back and forth, two to five times in a row." }
+        ]
+    },
+    "Clefable": { 
+        hp: 95, attack: 70, defense: 73, specialAttack: 95, specialDefense: 90, speed: 60,
+        type: "Fairy",
+        moves: [
+            { name: "Pound", description: "The target is physically pounded with a long tail or a foreleg, etc." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Sing", description: "A soothing lullaby is sung in a calming voice that puts the target into a deep slumber." },
+            { name: "Double Slap", description: "The target is slapped repeatedly, back and forth, two to five times in a row." }
+        ]
+    },
+    "Vulpix": { 
+        hp: 38, attack: 41, defense: 40, specialAttack: 50, specialDefense: 65, speed: 65,
+        type: "Fire",
+        moves: [
+            { name: "Ember", description: "A weak fire attack that may inflict a burn." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Flamethrower", description: "The foe is scorched with an intense blast of fire. The target may also be left with a burn." }
+        ]
+    },
+    "Ninetales": { 
+        hp: 73, attack: 76, defense: 75, specialAttack: 81, specialDefense: 100, speed: 100,
+        type: "Fire",
+        moves: [
+            { name: "Ember", description: "A weak fire attack that may inflict a burn." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Flamethrower", description: "The foe is scorched with an intense blast of fire. The target may also be left with a burn." }
+        ]
+    },
+    "Jigglypuff": { 
+        hp: 115, attack: 45, defense: 20, specialAttack: 45, specialDefense: 25, speed: 20,
+        type: "Normal",
+        moves: [
+            { name: "Sing", description: "A soothing lullaby is sung in a calming voice that puts the target into a deep slumber." },
+            { name: "Pound", description: "The target is physically pounded with a long tail or a foreleg, etc." },
+            { name: "Defense Curl", description: "The user curls up to increase its Defense stat." },
+            { name: "Double Slap", description: "The target is slapped repeatedly, back and forth, two to five times in a row." }
+        ]
+    },
+    "Wigglytuff": { 
+        hp: 140, attack: 70, defense: 45, specialAttack: 85, specialDefense: 50, speed: 45,
+        type: "Normal",
+        moves: [
+            { name: "Sing", description: "A soothing lullaby is sung in a calming voice that puts the target into a deep slumber." },
+            { name: "Pound", description: "The target is physically pounded with a long tail or a foreleg, etc." },
+            { name: "Defense Curl", description: "The user curls up to increase its Defense stat." },
+            { name: "Double Slap", description: "The target is slapped repeatedly, back and forth, two to five times in a row." }
+        ]
+    },
+    "Zubat": { 
+        hp: 40, attack: 45, defense: 35, specialAttack: 30, specialDefense: 40, speed: 55,
+        type: "Poison",
+        moves: [
+            { name: "Leech Life", description: "The user drains the target's blood. The user's HP is restored by half the damage taken by the target." },
+            { name: "Supersonic", description: "The user generates odd sound waves from its body to confuse the target." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Wing Attack", description: "The foe is struck with large, imposing wings spread wide to inflict damage." }
+        ]
+    },
+    "Golbat": { 
+        hp: 75, attack: 80, defense: 70, specialAttack: 65, specialDefense: 75, speed: 90,
+        type: "Poison",
+        moves: [
+            { name: "Leech Life", description: "The user drains the target's blood. The user's HP is restored by half the damage taken by the target." },
+            { name: "Supersonic", description: "The user generates odd sound waves from its body to confuse the target." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Wing Attack", description: "The foe is struck with large, imposing wings spread wide to inflict damage." }
+        ]
+    },
+    "Oddish": { 
+        hp: 45, attack: 50, defense: 55, specialAttack: 75, specialDefense: 65, speed: 30,
+        type: "Grass",
+        moves: [
+            { name: "Absorb", description: "A nutrient-draining attack. The user's HP is restored by half the damage taken by the target." },
+            { name: "Sweet Scent", description: "A pleasant aroma that distracts the foe. It sharply reduces the target's evasiveness." },
+            { name: "Poison Powder", description: "A cloud of poisonous dust is scattered on the target. It may poison the target." },
+            { name: "Stun Spore", description: "The user scatters a cloud of paralyzing powder. It may leave the target with paralysis." }
+        ]
+    },
+    "Gloom": { 
+        hp: 60, attack: 65, defense: 70, specialAttack: 85, specialDefense: 75, speed: 40,
+        type: "Grass",
+        moves: [
+            { name: "Absorb", description: "A nutrient-draining attack. The user's HP is restored by half the damage taken by the target." },
+            { name: "Sweet Scent", description: "A pleasant aroma that distracts the foe. It sharply reduces the target's evasiveness." },
+            { name: "Poison Powder", description: "A cloud of poisonous dust is scattered on the target. It may poison the target." },
+            { name: "Stun Spore", description: "The user scatters a cloud of paralyzing powder. It may leave the target with paralysis." }
+        ]
+    },
+    "Vileplume": { 
+        hp: 75, attack: 80, defense: 85, specialAttack: 110, specialDefense: 90, speed: 50,
+        type: "Grass",
+        moves: [
+            { name: "Petal Dance", description: "The user attacks the foe by scattering petals for two to three turns. The user then becomes confused." },
+            { name: "Solar Beam", description: "A two-turn attack. The user gathers light, then blasts a bundled beam on the second turn." },
+            { name: "Poison Powder", description: "A cloud of poisonous dust is scattered on the target. It may poison the target." },
+            { name: "Stun Spore", description: "The user scatters a cloud of paralyzing powder. It may leave the target with paralysis." }
+        ]
+    },
+    "Paras": { 
+        hp: 35, attack: 70, defense: 55, specialAttack: 45, specialDefense: 55, speed: 25,
+        type: "Bug",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Stun Spore", description: "The user scatters a cloud of paralyzing powder. It may leave the target with paralysis." },
+            { name: "Poison Powder", description: "A cloud of poisonous dust is scattered on the target. It may poison the target." },
+            { name: "Leech Life", description: "The user drains the target's blood. The user's HP is restored by half the damage taken by the target." }
+        ]
+    },
+    "Parasect": { 
+        hp: 60, attack: 95, defense: 80, specialAttack: 60, specialDefense: 80, speed: 30,
+        type: "Bug",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Stun Spore", description: "The user scatters a cloud of paralyzing powder. It may leave the target with paralysis." },
+            { name: "Poison Powder", description: "A cloud of poisonous dust is scattered on the target. It may poison the target." },
+            { name: "Leech Life", description: "The user drains the target's blood. The user's HP is restored by half the damage taken by the target." }
+        ]
+    },
+    "Venonat": { 
+        hp: 60, attack: 55, defense: 50, specialAttack: 40, specialDefense: 55, speed: 45,
+        type: "Bug",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." },
+            { name: "Poison Powder", description: "A cloud of poisonous dust is scattered on the target. It may poison the target." },
+            { name: "Leech Life", description: "The user drains the target's blood. The user's HP is restored by half the damage taken by the target." }
+        ]
+    },
+    "Venomoth": { 
+        hp: 70, attack: 65, defense: 60, specialAttack: 90, specialDefense: 75, speed: 90,
+        type: "Bug",
+        moves: [
+            { name: "Psychic", description: "The foe is hit by a strong telekinetic force. It may also reduce the target's Special Defense stat." },
+            { name: "Sludge Bomb", description: "Filthy sludge is hurled at the foe. It may also poison the target." },
+            { name: "Poison Powder", description: "A cloud of poisonous dust is scattered on the target. It may poison the target." },
+            { name: "Leech Life", description: "The user drains the target's blood. The user's HP is restored by half the damage taken by the target." }
+        ]
+    },
+    "Diglett": { 
+        hp: 10, attack: 55, defense: 25, specialAttack: 35, specialDefense: 45, speed: 95,
+        type: "Ground",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Magnitude", description: "The user looses a ground-shaking quake affecting everyone in battle. Its power varies." },
+            { name: "Earthquake", description: "The user sets off an earthquake that strikes all Pokémon in battle." }
+        ]
+    },
+    "Dugtrio": { 
+        hp: 35, attack: 100, defense: 50, specialAttack: 50, specialDefense: 70, speed: 120,
+        type: "Ground",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Magnitude", description: "The user looses a ground-shaking quake affecting everyone in battle. Its power varies." },
+            { name: "Earthquake", description: "The user sets off an earthquake that strikes all Pokémon in battle." }
+        ]
+    },
+    "Meowth": { 
+        hp: 40, attack: 45, defense: 35, specialAttack: 40, specialDefense: 40, speed: 90,
+        type: "Normal",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Faint Attack", description: "The user draws up close to the target, then strikes without warning. It hits without fail." }
+        ]
+    },
+    "Persian": { 
+        hp: 65, attack: 70, defense: 60, specialAttack: 65, specialDefense: 65, speed: 115,
+        type: "Normal",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Faint Attack", description: "The user draws up close to the target, then strikes without warning. It hits without fail." }
+        ]
+    },
+    "Psyduck": { 
+        hp: 50, attack: 52, defense: 48, specialAttack: 65, specialDefense: 50, speed: 55,
+        type: "Water",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Confusion", description: "The foe is hit by a weak telekinetic force. It may also leave the target confused." }
+        ]
+    },
+    "Golduck": { 
+        hp: 80, attack: 82, defense: 78, specialAttack: 95, specialDefense: 80, speed: 85,
+        type: "Water",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Confusion", description: "The foe is hit by a weak telekinetic force. It may also leave the target confused." }
+        ]
+    },
+    "Mankey": { 
+        hp: 40, attack: 80, defense: 35, specialAttack: 35, specialDefense: 45, speed: 70,
+        type: "Fighting",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Low Kick", description: "A powerful low kick that makes the foe fall over. It inflicts greater damage on heavier foes." },
+            { name: "Karate Chop", description: "The foe is attacked with a sharp chop. It has a high critical-hit ratio." },
+            { name: "Fury Swipes", description: "The foe is raked with sharp claws or scythes quickly two to five times." }
+        ]
+    },
+    "Primeape": { 
+        hp: 65, attack: 105, defense: 60, specialAttack: 60, specialDefense: 70, speed: 95,
+        type: "Fighting",
+        moves: [
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Low Kick", description: "A powerful low kick that makes the foe fall over. It inflicts greater damage on heavier foes." },
+            { name: "Karate Chop", description: "The foe is attacked with a sharp chop. It has a high critical-hit ratio." },
+            { name: "Fury Swipes", description: "The foe is raked with sharp claws or scythes quickly two to five times." }
+        ]
+    },
+    "Growlithe": { 
+        hp: 55, attack: 70, defense: 45, specialAttack: 70, specialDefense: 50, speed: 60,
+        type: "Fire",
+        moves: [
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Roar", description: "The foe is scared off, to be replaced by another Pokémon in its party. In the wild, the battle ends." },
+            { name: "Ember", description: "A weak fire attack that may inflict a burn." },
+            { name: "Flame Wheel", description: "The user cloaks itself in fire and charges at the foe. It may cause a burn." }
+        ]
+    },
+    "Arcanine": { 
+        hp: 90, attack: 110, defense: 80, specialAttack: 100, specialDefense: 80, speed: 95,
+        type: "Fire",
+        moves: [
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Roar", description: "The foe is scared off, to be replaced by another Pokémon in its party. In the wild, the battle ends." },
+            { name: "Ember", description: "A weak fire attack that may inflict a burn." },
+            { name: "Flame Wheel", description: "The user cloaks itself in fire and charges at the foe. It may cause a burn." }
+        ]
+    },
+    "Poliwag": { 
+        hp: 40, attack: 50, defense: 40, specialAttack: 40, specialDefense: 40, speed: 90,
+        type: "Water",
+        moves: [
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Hypnosis", description: "The user employs hypnotic suggestion to make the target fall into a deep sleep." },
+            { name: "Bubble Beam", description: "A spray of bubbles is forcefully ejected at the foe. It may also lower the target's Speed stat." },
+            { name: "Body Slam", description: "The user drops onto the target with its full body weight. It may also cause paralysis." }
+        ]
+    },
+    "Poliwhirl": { 
+        hp: 65, attack: 65, defense: 65, specialAttack: 50, specialDefense: 50, speed: 90,
+        type: "Water",
+        moves: [
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Hypnosis", description: "The user employs hypnotic suggestion to make the target fall into a deep sleep." },
+            { name: "Bubble Beam", description: "A spray of bubbles is forcefully ejected at the foe. It may also lower the target's Speed stat." },
+            { name: "Body Slam", description: "The user drops onto the target with its full body weight. It may also cause paralysis." }
+        ]
+    },
+    "Poliwrath": { 
+        hp: 90, attack: 95, defense: 95, specialAttack: 70, specialDefense: 90, speed: 70,
+        type: "Water/Fighting",
+        moves: [
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Hypnosis", description: "The user employs hypnotic suggestion to make the target fall into a deep sleep." },
+            { name: "Bubble Beam", description: "A spray of bubbles is forcefully ejected at the foe. It may also lower the target's Speed stat." },
+            { name: "Body Slam", description: "The user drops onto the target with its full body weight. It may also cause paralysis." }
+        ]
+    },
+    "Abra": { 
+        hp: 25, attack: 20, defense: 15, specialAttack: 105, specialDefense: 55, speed: 90,
+        type: "Psychic",
+        moves: [
+            { name: "Teleport", description: "Use it to flee from any wild Pokémon. Also warps to the last Pokécenter." },
+            { name: "None", description: "No other moves." },
+            { name: "None", description: "No other moves." },
+            { name: "None", description: "No other moves." }
+        ]
+    },
+    "Kadabra": { 
+        hp: 40, attack: 35, defense: 30, specialAttack: 120, specialDefense: 70, speed: 105,
+        type: "Psychic",
+        moves: [
+            { name: "Psybeam", description: "The foe is attacked with a peculiar ray. It may also leave the target confused." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." },
+            { name: "Confusion", description: "The foe is hit by a weak telekinetic force. It may also leave the target confused." },
+            { name: "Teleport", description: "Use it to flee from any wild Pokémon. Also warps to the last Pokécenter." }
+        ]
+    },
+    "Alakazam": { 
+        hp: 55, attack: 50, defense: 45, specialAttack: 135, specialDefense: 95, speed: 120,
+        type: "Psychic",
+        moves: [
+            { name: "Psybeam", description: "The foe is attacked with a peculiar ray. It may also leave the target confused." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." },
+            { name: "Confusion", description: "The foe is hit by a weak telekinetic force. It may also leave the target confused." },
+            { name: "Teleport", description: "Use it to flee from any wild Pokémon. Also warps to the last Pokécenter." }
+        ]
+    },
+    "Machop": { 
+        hp: 70, attack: 80, defense: 50, specialAttack: 35, specialDefense: 35, speed: 35,
+        type: "Fighting",
+        moves: [
+            { name: "Low Kick", description: "A powerful low kick that makes the foe fall over. It inflicts greater damage on heavier foes." },
+            { name: "Karate Chop", description: "The foe is attacked with a sharp chop. It has a high critical-hit ratio." },
+            { name: "Seismic Toss", description: "The foe is thrown using the power of gravity. It inflicts damage equal to the user's level." },
+            { name: "Foresight", description: "Enables the user to hit a Ghost type with any type of move. It also enables the user to hit an evasive foe." }
+        ]
+    },
+    "Machoke": { 
+        hp: 80, attack: 100, defense: 70, specialAttack: 50, specialDefense: 60, speed: 45,
+        type: "Fighting",
+        moves: [
+            { name: "Low Kick", description: "A powerful low kick that makes the foe fall over. It inflicts greater damage on heavier foes." },
+            { name: "Karate Chop", description: "The foe is attacked with a sharp chop. It has a high critical-hit ratio." },
+            { name: "Seismic Toss", description: "The foe is thrown using the power of gravity. It inflicts damage equal to the user's level." },
+            { name: "Foresight", description: "Enables the user to hit a Ghost type with any type of move. It also enables the user to hit an evasive foe." }
+        ]
+    },
+    "Machamp": { 
+        hp: 90, attack: 130, defense: 80, specialAttack: 65, specialDefense: 85, speed: 55,
+        type: "Fighting",
+        moves: [
+            { name: "Low Kick", description: "A powerful low kick that makes the foe fall over. It inflicts greater damage on heavier foes." },
+            { name: "Karate Chop", description: "The foe is attacked with a sharp chop. It has a high critical-hit ratio." },
+            { name: "Seismic Toss", description: "The foe is thrown using the power of gravity. It inflicts damage equal to the user's level." },
+            { name: "Foresight", description: "Enables the user to hit a Ghost type with any type of move. It also enables the user to hit an evasive foe." }
+        ]
+    },
+    "Bellsprout": { 
+        hp: 50, attack: 75, defense: 35, specialAttack: 70, specialDefense: 30, speed: 40,
+        type: "Grass",
+        moves: [
+            { name: "Vine Whip", description: "The foe is struck with slender, whiplike vines to inflict damage." },
+            { name: "Growth", description: "The user's body grows all at once, raising the Special Attack stat." },
+            { name: "Wrap", description: "A long body or vines are used to wrap and squeeze the foe for two to five turns." },
+            { name: "Sleep Powder", description: "The user scatters a big cloud of sleep-inducing dust around the foe." }
+        ]
+    },
+    "Weepinbell": { 
+        hp: 65, attack: 90, defense: 50, specialAttack: 85, specialDefense: 45, speed: 55,
+        type: "Grass",
+        moves: [
+            { name: "Vine Whip", description: "The foe is struck with slender, whiplike vines to inflict damage." },
+            { name: "Growth", description: "The user's body grows all at once, raising the Special Attack stat." },
+            { name: "Wrap", description: "A long body or vines are used to wrap and squeeze the foe for two to five turns." },
+            { name: "Sleep Powder", description: "The user scatters a big cloud of sleep-inducing dust around the foe." }
+        ]
+    },
+    "Victreebel": { 
+        hp: 80, attack: 105, defense: 65, specialAttack: 100, specialDefense: 60, speed: 70,
+        type: "Grass",
+        moves: [
+            { name: "Vine Whip", description: "The foe is struck with slender, whiplike vines to inflict damage." },
+            { name: "Growth", description: "The user's body grows all at once, raising the Special Attack stat." },
+            { name: "Wrap", description: "A long body or vines are used to wrap and squeeze the foe for two to five turns." },
+            { name: "Sleep Powder", description: "The user scatters a big cloud of sleep-inducing dust around the foe." }
+        ]
+    },
+    "Tentacool": { 
+        hp: 40, attack: 40, defense: 35, specialAttack: 50, specialDefense: 100, speed: 70,
+        type: "Water",
+        moves: [
+            { name: "Poison Sting", description: "The foe is stabbed with a tentacle, arm, or the like steeped in poison. It may also poison the foe." },
+            { name: "Supersonic", description: "The user generates odd sound waves from its body. It may confuse the target." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Constrict", description: "The foe is attacked with long tentacles or vines. It may also lower the target's Speed stat." }
+        ]
+    },
+    "Tentacruel": { 
+        hp: 80, attack: 70, defense: 65, specialAttack: 80, specialDefense: 120, speed: 100,
+        type: "Water",
+        moves: [
+            { name: "Poison Sting", description: "The foe is stabbed with a tentacle, arm, or the like steeped in poison. It may also poison the foe." },
+            { name: "Supersonic", description: "The user generates odd sound waves from its body. It may confuse the target." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Constrict", description: "The foe is attacked with long tentacles or vines. It may also lower the target's Speed stat." }
+        ]
+    },
+    "Geodude": { 
+        hp: 40, attack: 80, defense: 100, specialAttack: 30, specialDefense: 30, speed: 20,
+        type: "Rock",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Defense Curl", description: "The user curls up to conceal weak spots and raise its Defense stat." },
+            { name: "Rock Throw", description: "The user picks up and throws a small rock at the foe to attack." },
+            { name: "Magnitude", description: "The user looses a ground-shaking quake affecting everyone in battle. Its power varies." }
+        ]
+    },
+    "Graveler": { 
+        hp: 55, attack: 95, defense: 115, specialAttack: 45, specialDefense: 45, speed: 35,
+        type: "Rock",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Defense Curl", description: "The user curls up to conceal weak spots and raise its Defense stat." },
+            { name: "Rock Throw", description: "The user picks up and throws a small rock at the foe to attack." },
+            { name: "Magnitude", description: "The user looses a ground-shaking quake affecting everyone in battle. Its power varies." }
+        ]
+    },
+    "Golem": { 
+        hp: 80, attack: 120, defense: 130, specialAttack: 55, specialDefense: 65, speed: 45,
+        type: "Rock",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Defense Curl", description: "The user curls up to conceal weak spots and raise its Defense stat." },
+            { name: "Rock Throw", description: "The user picks up and throws a small rock at the foe to attack." },
+            { name: "Magnitude", description: "The user looses a ground-shaking quake affecting everyone in battle. Its power varies." }
+        ]
+    },
+    "Ponyta": { 
+        hp: 50, attack: 85, defense: 55, specialAttack: 65, specialDefense: 65, speed: 90,
+        type: "Fire",
+        moves: [
+            { name: "Ember", description: "A weak fire attack that may inflict a burn." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Stomp", description: "The foe is stomped with a big foot. It may make the foe flinch." },
+            { name: "Fire Spin", description: "The foe becomes trapped within a fierce vortex of fire that rages for two to five turns." }
+        ]
+    },
+    "Rapidash": { 
+        hp: 65, attack: 100, defense: 70, specialAttack: 80, specialDefense: 80, speed: 105,
+        type: "Fire",
+        moves: [
+            { name: "Ember", description: "A weak fire attack that may inflict a burn." },
+            { name: "Tail Whip", description: "The user wags its tail cutely, making the foe less wary. The target's Defense stat is reduced." },
+            { name: "Stomp", description: "The foe is stomped with a big foot. It may make the foe flinch." },
+            { name: "Fire Spin", description: "The foe becomes trapped within a fierce vortex of fire that rages for two to five turns." }
+        ]
+    },
+    "Slowpoke": { 
+        hp: 90, attack: 65, defense: 65, specialAttack: 40, specialDefense: 40, speed: 15,
+        type: "Water",
+        moves: [
+            { name: "Confusion", description: "The foe is hit by a weak telekinetic force. It may also leave the target confused." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." },
+            { name: "Headbutt", description: "The user sticks out its head and attacks by charging straight into the target. It may make the target flinch." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." }
+        ]
+    },
+    "Slowbro": { 
+        hp: 95, attack: 75, defense: 110, specialAttack: 100, specialDefense: 80, speed: 30,
+        type: "Water",
+        moves: [
+            { name: "Confusion", description: "The foe is hit by a weak telekinetic force. It may also leave the target confused." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." },
+            { name: "Headbutt", description: "The user sticks out its head and attacks by charging straight into the target. It may make the target flinch." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." }
+        ]
+    },
+    "Magnemite": { 
+        hp: 25, attack: 35, defense: 70, specialAttack: 95, specialDefense: 55, speed: 45,
+        type: "Electric",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Supersonic", description: "The user generates odd sound waves from its body. It may confuse the target." },
+            { name: "Thunder Shock", description: "A jolt of electricity is hurled at the foe to inflict damage. It may also leave the target with paralysis." },
+            { name: "Thunder Wave", description: "A weak electric shock that is sure to cause paralysis if it hits." }
+        ]
+    },
+    "Magneton": { 
+        hp: 50, attack: 60, defense: 95, specialAttack: 120, specialDefense: 70, speed: 70,
+        type: "Electric",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Supersonic", description: "The user generates odd sound waves from its body. It may confuse the target." },
+            { name: "Thunder Shock", description: "A jolt of electricity is hurled at the foe to inflict damage. It may also leave the target with paralysis." },
+            { name: "Thunder Wave", description: "A weak electric shock that is sure to cause paralysis if it hits." }
+        ]
+    },
+    "Farfetch'd": { 
+        hp: 52, attack: 65, defense: 55, specialAttack: 58, specialDefense: 62, speed: 60,
+        type: "Normal",
+        moves: [
+            { name: "Peck", description: "The foe is jabbed with a sharply pointed beak or horn." },
+            { name: "Sand Attack", description: "A lot of sand is hurled in the foe's face, reducing its accuracy." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Fury Attack", description: "The foe is jabbed repeatedly with a horn or beak two to five times." }
+        ]
+    },
+    "Doduo": { 
+        hp: 35, attack: 85, defense: 45, specialAttack: 35, specialDefense: 35, speed: 75,
+        type: "Normal",
+        moves: [
+            { name: "Peck", description: "The foe is jabbed with a sharply pointed beak or horn." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Quick Attack", description: "The user lunges at the foe at a speed that makes it almost invisible. It is sure to strike first." },
+            { name: "Rage", description: "As long as this move is in use, the user's attack power rises each time the user is hit in battle." }
+        ]
+    },
+    "Dodrio": { 
+        hp: 60, attack: 110, defense: 70, specialAttack: 60, specialDefense: 60, speed: 110,
+        type: "Normal",
+        moves: [
+            { name: "Peck", description: "The foe is jabbed with a sharply pointed beak or horn." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Quick Attack", description: "The user lunges at the foe at a speed that makes it almost invisible. It is sure to strike first." },
+            { name: "Rage", description: "As long as this move is in use, the user's attack power rises each time the user is hit in battle." }
+        ]
+    },
+    "Seel": { 
+        hp: 65, attack: 45, defense: 55, specialAttack: 45, specialDefense: 70, speed: 45,
+        type: "Water",
+        moves: [
+            { name: "Headbutt", description: "The user sticks out its head and attacks by charging straight into the target. It may make the target flinch." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Icy Wind", description: "The user attacks with a gust of chilled air. It also lowers the target's Speed stat." },
+            { name: "Aurora Beam", description: "A rainbow-colored attack beam. It may also lower the target's Attack stat." }
+        ]
+    },
+    "Dewgong": { 
+        hp: 90, attack: 70, defense: 80, specialAttack: 70, specialDefense: 95, speed: 70,
+        type: "Water",
+        moves: [
+            { name: "Headbutt", description: "The user sticks out its head and attacks by charging straight into the target. It may make the target flinch." },
+            { name: "Growl", description: "The user growls in an endearing way, making the foe less wary. The target's Attack stat is lowered." },
+            { name: "Icy Wind", description: "The user attacks with a gust of chilled air. It also lowers the target's Speed stat." },
+            { name: "Aurora Beam", description: "A rainbow-colored attack beam. It may also lower the target's Attack stat." }
+        ]
+    },
+    "Grimer": { 
+        hp: 80, attack: 80, defense: 50, specialAttack: 40, specialDefense: 50, speed: 25,
+        type: "Poison",
+        moves: [
+            { name: "Pound", description: "The foe is physically pounded with a long tail or a foreleg, etc." },
+            { name: "Harden", description: "The user stiffens all the muscles in its body to raise its Defense stat." },
+            { name: "Mud-Slap", description: "The user hurls mud in the foe's face to inflict damage and lower its accuracy." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." }
+        ]
+    },
+    "Muk": { 
+        hp: 105, attack: 105, defense: 75, specialAttack: 65, specialDefense: 100, speed: 50,
+        type: "Poison",
+        moves: [
+            { name: "Pound", description: "The foe is physically pounded with a long tail or a foreleg, etc." },
+            { name: "Harden", description: "The user stiffens all the muscles in its body to raise its Defense stat." },
+            { name: "Mud-Slap", description: "The user hurls mud in the foe's face to inflict damage and lower its accuracy." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." }
+        ]
+    },
+    "Shellder": { 
+        hp: 30, attack: 65, defense: 100, specialAttack: 45, specialDefense: 25, speed: 40,
+        type: "Water",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Withdraw", description: "The user withdraws its body into its hard shell, raising its Defense stat." },
+            { name: "Supersonic", description: "The user generates odd sound waves from its body. It may confuse the target." },
+            { name: "Icicle Spear", description: "The user launches sharp icicles at the foe. It strikes two to five times in a row." }
+        ]
+    },
+    "Cloyster": { 
+        hp: 50, attack: 95, defense: 180, specialAttack: 85, specialDefense: 45, speed: 70,
+        type: "Water",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Withdraw", description: "The user withdraws its body into its hard shell, raising its Defense stat." },
+            { name: "Supersonic", description: "The user generates odd sound waves from its body. It may confuse the target." },
+            { name: "Icicle Spear", description: "The user launches sharp icicles at the foe. It strikes two to five times in a row." }
+        ]
+    },
+    "Gastly": { 
+        hp: 30, attack: 35, defense: 30, specialAttack: 100, specialDefense: 35, speed: 80,
+        type: "Ghost",
+        moves: [
+            { name: "Lick", description: "The foe is licked with a long tongue, causing damage. It may also leave the target with paralysis." },
+            { name: "Hypnosis", description: "The user employs hypnotic suggestion to make the target fall into a deep sleep." },
+            { name: "Mean Look", description: "The user affixes the foe with a dark, arresting look. The target becomes unable to flee." },
+            { name: "Night Shade", description: "The user makes the foe see a mirage. It inflicts damage matching the user's level." }
+        ]
+    },
+    "Haunter": { 
+        hp: 45, attack: 50, defense: 45, specialAttack: 115, specialDefense: 55, speed: 95,
+        type: "Ghost",
+        moves: [
+            { name: "Lick", description: "The foe is licked with a long tongue, causing damage. It may also leave the target with paralysis." },
+            { name: "Hypnosis", description: "The user employs hypnotic suggestion to make the target fall into a deep sleep." },
+            { name: "Mean Look", description: "The user affixes the foe with a dark, arresting look. The target becomes unable to flee." },
+            { name: "Night Shade", description: "The user makes the foe see a mirage. It inflicts damage matching the user's level." }
+        ]
+    },
+    "Gengar": { 
+        hp: 60, attack: 65, defense: 60, specialAttack: 130, specialDefense: 75, speed: 110,
+        type: "Ghost",
+        moves: [
+            { name: "Lick", description: "The foe is licked with a long tongue, causing damage. It may also leave the target with paralysis." },
+            { name: "Hypnosis", description: "The user employs hypnotic suggestion to make the target fall into a deep sleep." },
+            { name: "Mean Look", description: "The user affixes the foe with a dark, arresting look. The target becomes unable to flee." },
+            { name: "Night Shade", description: "The user makes the foe see a mirage. It inflicts damage matching the user's level." }
+        ]
+    },
+    "Onix": { 
+        hp: 35, attack: 45, defense: 160, specialAttack: 30, specialDefense: 45, speed: 70,
+        type: "Rock",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Screech", description: "An ear-splitting screech is emitted to sharply reduce the foe's Defense stat." },
+            { name: "Rock Throw", description: "The user picks up and throws a small rock at the foe to attack." },
+            { name: "Bind", description: "A long body or tentacles are used to bind and squeeze the foe for two to five turns." }
+        ]
+    },
+    "Drowzee": { 
+        hp: 60, attack: 48, defense: 45, specialAttack: 43, specialDefense: 90, speed: 42,
+        type: "Psychic",
+        moves: [
+            { name: "Pound", description: "The foe is physically pounded with a long tail or a foreleg, etc." },
+            { name: "Hypnosis", description: "The user employs hypnotic suggestion to make the target fall into a deep sleep." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." },
+            { name: "Confusion", description: "The foe is hit by a weak telekinetic force. It may also leave the target confused." }
+        ]
+    },
+    "Hypno": { 
+        hp: 85, attack: 73, defense: 70, specialAttack: 73, specialDefense: 115, speed: 67,
+        type: "Psychic",
+        moves: [
+            { name: "Pound", description: "The foe is physically pounded with a long tail or a foreleg, etc." },
+            { name: "Hypnosis", description: "The user employs hypnotic suggestion to make the target fall into a deep sleep." },
+            { name: "Disable", description: "For a few turns, it prevents the foe from using the move it last used." },
+            { name: "Confusion", description: "The foe is hit by a weak telekinetic force. It may also leave the target confused." }
+        ]
+    },
+    "Krabby": { 
+        hp: 30, attack: 105, defense: 90, specialAttack: 25, specialDefense: 25, speed: 50,
+        type: "Water",
+        moves: [
+            { name: "Vice Grip", description: "The foe is gripped and squeezed from both sides to inflict damage." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Harden", description: "The user stiffens all the muscles in its body to raise its Defense stat." },
+            { name: "Bubble", description: "A spray of countless bubbles is jetted at the foe. It may also lower the target's Speed stat." }
+        ]
+    },
+    "Kingler": { 
+        hp: 55, attack: 130, defense: 115, specialAttack: 50, specialDefense: 50, speed: 75,
+        type: "Water",
+        moves: [
+            { name: "Vice Grip", description: "The foe is gripped and squeezed from both sides to inflict damage." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Harden", description: "The user stiffens all the muscles in its body to raise its Defense stat." },
+            { name: "Bubble", description: "A spray of countless bubbles is jetted at the foe. It may also lower the target's Speed stat." }
+        ]
+    },
+    "Voltorb": { 
+        hp: 40, attack: 30, defense: 50, specialAttack: 55, specialDefense: 55, speed: 100,
+        type: "Electric",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Screech", description: "An ear-splitting screech is emitted to sharply reduce the foe's Defense stat." },
+            { name: "Sonic Boom", description: "The foe is hit with a shock wave that always inflicts 20 HP damage." },
+            { name: "Spark", description: "The user throws an electrically charged tackle at the foe. It may also leave the target with paralysis." }
+        ]
+    },
+    "Electrode": { 
+        hp: 60, attack: 50, defense: 70, specialAttack: 80, specialDefense: 80, speed: 140,
+        type: "Electric",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Screech", description: "An ear-splitting screech is emitted to sharply reduce the foe's Defense stat." },
+            { name: "Sonic Boom", description: "The foe is hit with a shock wave that always inflicts 20 HP damage." },
+            { name: "Spark", description: "The user throws an electrically charged tackle at the foe. It may also leave the target with paralysis." }
+        ]
+    },
+    "Exeggcute": { 
+        hp: 60, attack: 40, defense: 80, specialAttack: 60, specialDefense: 45, speed: 40,
+        type: "Grass",
+        moves: [
+            { name: "Barrage", description: "The foe is hit with a barrage of small seeds two to five times." },
+            { name: "Reflect", description: "A mystical force is set up to reduce physical damage to the user and its allies." },
+            { name: "Leech Seed", description: "The foe is seeded with a plant that drains HP over several turns." },
+            { name: "Stun Spore", description: "The user scatters a cloud of spores to paralyze the target." }
+        ]
+    },
+    "Exeggutor": { 
+        hp: 95, attack: 95, defense: 85, specialAttack: 125, specialDefense: 75, speed: 55,
+        type: "Grass",
+        moves: [
+            { name: "Barrage", description: "The foe is hit with a barrage of small seeds two to five times." },
+            { name: "Reflect", description: "A mystical force is set up to reduce physical damage to the user and its allies." },
+            { name: "Leech Seed", description: "The foe is seeded with a plant that drains HP over several turns." },
+            { name: "Stun Spore", description: "The user scatters a cloud of spores to paralyze the target." }
+        ]
+    },
+    "Omanyte": { 
+        hp: 35, attack: 40, defense: 100, specialAttack: 90, specialDefense: 55, speed: 35,
+        type: "Rock",
+        moves: [
+            { name: "Constrict", description: "The user constricts the foe with its body, lowering its Speed stat." },
+            { name: "Withdraw", description: "The user withdraws its body into its shell to raise its Defense stat." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." }
+        ]
+    },
+    "Omastar": { 
+        hp: 70, attack: 60, defense: 125, specialAttack: 115, specialDefense: 70, speed: 55,
+        type: "Rock",
+        moves: [
+            { name: "Constrict", description: "The user constricts the foe with its body, lowering its Speed stat." },
+            { name: "Withdraw", description: "The user withdraws its body into its shell to raise its Defense stat." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." }
+        ]
+    },
+    "Kabuto": { 
+        hp: 30, attack: 80, defense: 90, specialAttack: 55, specialDefense: 55, speed: 55,
+        type: "Rock",
+        moves: [
+            { name: "Absorb", description: "The user absorbs the foe's HP and restores its own HP." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." }
+        ]
+    },
+    "Kabutops": { 
+        hp: 60, attack: 115, defense: 105, specialAttack: 65, specialDefense: 70, speed: 80,
+        type: "Rock",
+        moves: [
+            { name: "Absorb", description: "The user absorbs the foe's HP and restores its own HP." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Scratch", description: "Hard, pointed, sharp claws rake the foe." },
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." }
+        ]
+    },
+    "Aerodactyl": { 
+        hp: 80, attack: 105, defense: 65, specialAttack: 60, specialDefense: 75, speed: 130,
+        type: "Rock",
+        moves: [
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Wing Attack", description: "The user attacks with its wings to inflict damage." },
+            { name: "Hyper Beam", description: "The foe is blasted by a powerful beam of energy. It requires a recharge turn." }
+        ]
+    },
+    "Snorlax": { 
+        hp: 160, attack: 110, defense: 65, specialAttack: 65, specialDefense: 110, speed: 30,
+        type: "Normal",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Body Slam", description: "The user drops its large body on the foe to inflict damage. It may also cause paralysis." },
+            { name: "Sleep Talk", description: "The user, while sleeping, randomly uses one of its other moves." },
+            { name: "Rest", description: "The user goes to sleep for two turns, restoring HP and curing status conditions." }
+        ]
+    },
+    "Registeel": { 
+        hp: 80, attack: 75, defense: 150, specialAttack: 75, specialDefense: 150, speed: 50,
+        type: "Steel",
+        moves: [
+            { name: "Iron Head", description: "The user slams the foe with its steel-hard head. It may also cause flinching." },
+            { name: "Metal Claw", description: "The user claws at the foe with sharp metal claws. It may also raise the user's Attack stat." },
+            { name: "Rock Slide", description: "The user drops large rocks on the foe. It may cause the foe to flinch." },
+            { name: "Explosion", description: "The user detonates itself, causing massive damage to all Pokémon in battle. The user faints afterward." }
+        ]
+    },
+    "Articuno": { 
+        hp: 90, attack: 85, defense: 100, specialAttack: 95, specialDefense: 125, speed: 85,
+        type: "Ice",
+        moves: [
+            { name: "Ice Beam", description: "The foe is blasted with a cold beam. It may also freeze the target." },
+            { name: "Fly", description: "The user soars into the sky and then strikes the foe on the next turn." },
+            { name: "Reflect", description: "A mystical force is set up to reduce physical damage to the user and its allies." },
+            { name: "Blizzard", description: "The foe is blasted with a snowy storm. It may also freeze the target." }
+        ]
+    },
+    "Zapdos": { 
+        hp: 90, attack: 90, defense: 85, specialAttack: 125, specialDefense: 90, speed: 100,
+        type: "Electric",
+        moves: [
+            { name: "Thunderbolt", description: "The foe is struck by a bolt of lightning. It may also leave the target with paralysis." },
+            { name: "Fly", description: "The user soars into the sky and then strikes the foe on the next turn." },
+            { name: "Agility", description: "The user becomes nimble to sharply raise its Speed stat." },
+            { name: "Thunder", description: "The foe is struck by a powerful bolt of lightning. It may also leave the target with paralysis." }
+        ]
+    },
+    "Moltres": { 
+        hp: 90, attack: 100, defense: 90, specialAttack: 125, specialDefense: 85, speed: 90,
+        type: "Fire",
+        moves: [
+            { name: "Fire Blast", description: "The foe is engulfed in a fierce blaze. It may also cause a burn." },
+            { name: "Fly", description: "The user soars into the sky and then strikes the foe on the next turn." },
+            { name: "Agility", description: "The user becomes nimble to sharply raise its Speed stat." },
+            { name: "Flamethrower", description: "The foe is scorched with an intense blast of fire. The target may also be left with a burn." }
+        ]
+    },
+    "Dratini": { 
+        hp: 41, attack: 64, defense: 45, specialAttack: 50, specialDefense: 50, speed: 50,
+        type: "Dragon",
+        moves: [
+            { name: "Wrap", description: "The user wraps around the foe to inflict damage for several turns." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Agility", description: "The user becomes nimble to sharply raise its Speed stat." },
+            { name: "Dragon Rage", description: "The foe is hit with a blast of dragon energy that always inflicts 40 HP damage." }
+        ]
+    },
+    "Dragonair": { 
+        hp: 61, attack: 84, defense: 65, specialAttack: 70, specialDefense: 70, speed: 70,
+        type: "Dragon",
+        moves: [
+            { name: "Wrap", description: "The user wraps around the foe to inflict damage for several turns." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Agility", description: "The user becomes nimble to sharply raise its Speed stat." },
+            { name: "Dragon Rage", description: "The foe is hit with a blast of dragon energy that always inflicts 40 HP damage." }
+        ]
+    },
+    "Dragonite": { 
+        hp: 91, attack: 134, defense: 95, specialAttack: 100, specialDefense: 100, speed: 80,
+        type: "Dragon",
+        moves: [
+            { name: "Outrage", description: "The user attacks in a fit of rage. It causes confusion after the attack." },
+            { name: "Fly", description: "The user soars into the sky and then strikes the foe on the next turn." },
+            { name: "Thunderpunch", description: "The user attacks with a punch that may also leave the target paralyzed." },
+            { name: "Fire Punch", description: "The user attacks with a punch that may also burn the target." }
+        ]
+    },
+    "Mewtwo": { 
+        hp: 106, attack: 110, defense: 90, specialAttack: 154, specialDefense: 90, speed: 130,
+        type: "Psychic",
+        moves: [
+            { name: "Psycho Cut", description: "The user slashes with a sharp psychic blade. It has a high critical-hit ratio." },
+            { name: "Shadow Ball", description: "The user hurls a shadowy blob at the foe. It may also lower the target's Special Defense stat." },
+            { name: "Recover", description: "The user restores its HP by half of its maximum HP." },
+            { name: "Psychic", description: "The user attacks with a powerful psychic force. It may also lower the target's Special Defense stat." }
+        ]
+    },
+    "Mew": { 
+        hp: 100, attack: 100, defense: 100, specialAttack: 100, specialDefense: 100, speed: 100,
+        type: "Psychic",
+        moves: [
+            { name: "Psycho Cut", description: "The user slashes with a sharp psychic blade. It has a high critical-hit ratio." },
+            { name: "Shadow Ball", description: "The user hurls a shadowy blob at the foe. It may also lower the target's Special Defense stat." },
+            { name: "Recover", description: "The user restores its HP by half of its maximum HP." },
+            { name: "Psychic", description: "The user attacks with a powerful psychic force. It may also lower the target's Special Defense stat." }
+        ]
+    },
+    "Hitmonlee": { 
+        hp: 50, attack: 120, defense: 53, specialAttack: 35, specialDefense: 110, speed: 87,
+        type: "Fighting",
+        moves: [
+            { name: "High Jump Kick", description: "The user jumps high and kicks the foe. If it misses, the user loses half its HP." },
+            { name: "Jump Kick", description: "The user jumps and kicks the foe. If it misses, the user takes damage." },
+            { name: "Revenge", description: "The user retaliates for damage taken in the previous turn. It doubles in power if the user was damaged." },
+            { name: "Body Slam", description: "The user drops its large body on the foe to inflict damage. It may also cause paralysis." }
+        ]
+    },
+    "Hitmonchan": { 
+        hp: 50, attack: 105, defense: 79, specialAttack: 35, specialDefense: 110, speed: 76,
+        type: "Fighting",
+        moves: [
+            { name: "Comet Punch", description: "The user throws a series of punches that may hit multiple times." },
+            { name: "Mach Punch", description: "The user throws a quick punch with its fist. It always goes first." },
+            { name: "Counter", description: "The user retaliates against physical attacks with double the damage." },
+            { name: "Sky Uppercut", description: "The user attacks with an uppercut that may also hit flying Pokémon." }
+        ]
+    },
+    "Scyther": { 
+        hp: 70, attack: 110, defense: 80, specialAttack: 55, specialDefense: 80, speed: 105,
+        type: "Bug",
+        moves: [
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Wing Attack", description: "The user attacks with its wings to inflict damage." },
+            { name: "Double Hit", description: "The user strikes twice in a row." },
+            { name: "Swords Dance", description: "The user raises its Attack stat sharply." }
+        ]
+    },
+    "Gyarados": { 
+        hp: 95, attack: 125, defense: 79, specialAttack: 60, specialDefense: 100, speed: 81,
+        type: "Water",
+        moves: [
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Dragon Rage", description: "The foe is hit with a blast of dragon energy that always inflicts 40 HP damage." },
+            { name: "Surf", description: "The user attacks with a wave of water. It may also confuse the target." }
+        ]
+    },
+    "Lapras": { 
+        hp: 130, attack: 85, defense: 80, specialAttack: 85, specialDefense: 95, speed: 60,
+        type: "Water",
+        moves: [
+            { name: "Ice Beam", description: "The foe is blasted with a cold beam. It may also freeze the target." },
+            { name: "Surf", description: "The user attacks with a wave of water. It may also confuse the target." },
+            { name: "Psychic", description: "The user attacks with a powerful psychic force. It may also lower the target's Special Defense stat." },
+            { name: "Sing", description: "The user sings a soothing melody that may put the foe to sleep." }
+        ]
+    },
+    "Ditto": { 
+        hp: 48, attack: 48, defense: 48, specialAttack: 48, specialDefense: 48, speed: 48,
+        type: "Normal",
+        moves: [
+            { name: "Transform", description: "The user transforms into the foe, copying its appearance, type, and moves." }
+        ]
+    },
+    "Ivysaur": { 
+        hp: 60, attack: 62, defense: 63, specialAttack: 80, specialDefense: 80, speed: 60,
+        type: "Grass",
+        moves: [
+            { name: "Razor Leaf", description: "Sharp-edged leaves are launched to slash at the foe. It has a high critical-hit ratio." },
+            { name: "Growl", description: "The user growls in an intimidating manner to lower the foe's Attack stat." },
+            { name: "Leech Seed", description: "The foe is seeded with a plant that drains HP over several turns." },
+            { name: "Vine Whip", description: "The foe is struck with slender, whip-like vines to inflict damage." }
+        ]
+    },
+    "Venusaur": { 
+        hp: 80, attack: 82, defense: 83, specialAttack: 100, specialDefense: 100, speed: 80,
+        type: "Grass",
+        moves: [
+            { name: "Solar Beam", description: "A two-turn attack. The user gathers light, then blasts a bundled beam on the next turn." },
+            { name: "Razor Leaf", description: "Sharp-edged leaves are launched to slash at the foe. It has a high critical-hit ratio." },
+            { name: "Toxic", description: "The user shoots a poisonous blob at the foe. The target is badly poisoned." },
+            { name: "Earthquake", description: "The user causes a powerful quake that damages all Pokémon on the ground." }
+        ]
+    },
+    "Wartortle": { 
+        hp: 59, attack: 63, defense: 80, specialAttack: 65, specialDefense: 80, speed: 58,
+        type: "Water",
+        moves: [
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." }
+        ]
+    },
+    "Blastoise": { 
+        hp: 79, attack: 83, defense: 100, specialAttack: 85, specialDefense: 105, speed: 78,
+        type: "Water",
+        moves: [
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." },
+            { name: "Ice Beam", description: "The foe is blasted with a cold beam. It may also freeze the target." }
+        ]
+    },
+    "Cubone": { 
+        hp: 50, attack: 50, defense: 95, specialAttack: 40, specialDefense: 50, speed: 35,
+        type: "Ground",
+        moves: [
+            { name: "Bone Club", description: "The user attacks the foe with a bone. It may also cause flinching." },
+            { name: "Growl", description: "The user growls in an intimidating manner to lower the foe's Attack stat." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Rock Tomb", description: "The user drops large rocks on the foe. It may also lower the target's Speed stat." }
+        ]
+    },
+    "Marowak": { 
+        hp: 60, attack: 80, defense: 110, specialAttack: 50, specialDefense: 80, speed: 45,
+        type: "Ground",
+        moves: [
+            { name: "Bone Club", description: "The user attacks the foe with a bone. It may also cause flinching." },
+            { name: "Bonemerang", description: "The user throws a bone that returns to hit the foe twice." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Earthquake", description: "The user causes a powerful quake that damages all Pokémon on the ground." }
+        ]
+    },
+    "Lickitung": { 
+        hp: 90, attack: 55, defense: 75, specialAttack: 60, specialDefense: 75, speed: 30,
+        type: "Normal",
+        moves: [
+            { name: "Lick", description: "The user attacks the foe with its tongue. It may also cause paralysis." },
+            { name: "Wrap", description: "The user wraps around the foe to inflict damage for several turns." },
+            { name: "Body Slam", description: "The user drops its large body on the foe to inflict damage. It may also cause paralysis." },
+            { name: "Supersonic", description: "The user emits a loud sound to confuse the foe." }
+        ]
+    },
+    "Koffing": { 
+        hp: 40, attack: 65, defense: 95, specialAttack: 60, specialDefense: 45, speed: 35,
+        type: "Poison",
+        moves: [
+            { name: "Smog", description: "The user releases a cloud of smog to inflict damage. It may also poison the target." },
+            { name: "Clear Smog", description: "The user releases a thick fog that eliminates stat changes on the foe." },
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Self-Destruct", description: "The user explodes to inflict damage on all Pokémon in battle, including itself." }
+        ]
+    },
+    "Weezing": { 
+        hp: 65, attack: 90, defense: 120, specialAttack: 85, specialDefense: 70, speed: 60,
+        type: "Poison",
+        moves: [
+            { name: "Sludge Bomb", description: "The user hurls a blob of sludge at the foe. It may also poison the target." },
+            { name: "SmokeScreen", description: "The user releases smoke to lower the foe's accuracy." },
+            { name: "Explosion", description: "The user explodes to inflict damage on all Pokémon in battle, including itself." },
+            { name: "Clear Smog", description: "The user releases a thick fog that eliminates stat changes on the foe." }
+        ]
+    },
+    "Rhyhorn": { 
+        hp: 80, attack: 85, defense: 95, specialAttack: 30, specialDefense: 30, speed: 25,
+        type: "Ground",
+        moves: [
+            { name: "Horn Attack", description: "The user attacks with its horns. It may also cause flinching." },
+            { name: "Rock Blast", description: "The user attacks with a barrage of rocks. It may hit multiple times." },
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Stomp", description: "The user stomps on the foe to inflict damage. It may also cause flinching." }
+        ]
+    },
+    "Rhydon": { 
+        hp: 105, attack: 130, defense: 120, specialAttack: 45, specialDefense: 45, speed: 40,
+        type: "Ground",
+        moves: [
+            { name: "Horn Drill", description: "The user attacks with a horn. It may cause a one-hit KO." },
+            { name: "Rock Slide", description: "The user drops rocks on the foe. It may also cause flinching." },
+            { name: "Earthquake", description: "The user causes a powerful quake that damages all Pokémon on the ground." },
+            { name: "Stomp", description: "The user stomps on the foe to inflict damage. It may also cause flinching." }
+        ]
+    },
+    "Chansey": { 
+        hp: 250, attack: 5, defense: 5, specialAttack: 35, specialDefense: 105, speed: 50,
+        type: "Normal",
+        moves: [
+            { name: "Soft-Boiled", description: "The user restores its HP by half of its maximum HP." },
+            { name: "Sing", description: "The user sings a soothing melody that may put the foe to sleep." },
+            { name: "Seismic Toss", description: "The user throws the foe with great force, dealing damage equal to the user's level." },
+            { name: "Counter", description: "The user retaliates against physical attacks with double the damage." }
+        ]
+    },
+    "Tangela": { 
+        hp: 65, attack: 55, defense: 115, specialAttack: 100, specialDefense: 40, speed: 60,
+        type: "Grass",
+        moves: [
+            { name: "Vine Whip", description: "The foe is struck with slender, whip-like vines to inflict damage." },
+            { name: "Razor Leaf", description: "Sharp-edged leaves are launched to slash at the foe. It has a high critical-hit ratio." },
+            { name: "Solar Beam", description: "A two-turn attack. The user gathers light, then blasts a bundled beam on the next turn." },
+            { name: "Constrict", description: "The user constricts the foe to inflict damage and lower its Speed stat." }
+        ]
+    },
+    "Kangaskhan": { 
+        hp: 105, attack: 95, defense: 80, specialAttack: 40, specialDefense: 80, speed: 90,
+        type: "Normal",
+        moves: [
+            { name: "Comet Punch", description: "The user throws a series of punches that may hit multiple times." },
+            { name: "Tail Whip", description: "The user wags its tail to lower the foe's Defense stat." },
+            { name: "Mega Punch", description: "The user throws a powerful punch. It may also cause flinching." },
+            { name: "Dizzy Punch", description: "The user throws a punch that may confuse the target." }
+        ]
+    },
+    "Horsea": { 
+        hp: 30, attack: 40, defense: 70, specialAttack: 70, specialDefense: 25, speed: 60,
+        type: "Water",
+        moves: [
+            { name: "Bubble", description: "The user releases bubbles to inflict damage. It may also lower the foe's Speed stat." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Smokescreen", description: "The user releases smoke to lower the foe's accuracy." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." }
+        ]
+    },
+    "Seadra": { 
+        hp: 55, attack: 65, defense: 95, specialAttack: 95, specialDefense: 45, speed: 85,
+        type: "Water",
+        moves: [
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." },
+            { name: "Surf", description: "The user attacks with a wave of water. It may also confuse the target." },
+            { name: "Leer", description: "The foe is given an intimidating look that lowers its Defense stat." },
+            { name: "Twister", description: "The user attacks with a spiral of water. It may also confuse the target." }
+        ]
+    },
+    "Goldeen": { 
+        hp: 45, attack: 67, defense: 60, specialAttack: 35, specialDefense: 50, speed: 63,
+        type: "Water",
+        moves: [
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Horn Attack", description: "The user attacks with its horns. It may also cause flinching." },
+            { name: "Bubble Beam", description: "The user releases a beam of bubbles to inflict damage. It may also lower the foe's Speed stat." },
+            { name: "Agility", description: "The user becomes nimble to sharply raise its Speed stat." }
+        ]
+    },
+    "Seaking": { 
+        hp: 80, attack: 92, defense: 65, specialAttack: 65, specialDefense: 80, speed: 68,
+        type: "Water",
+        moves: [
+            { name: "Waterfall", description: "The user attacks with a powerful waterfall. It may also cause flinching." },
+            { name: "Horn Drill", description: "The user attacks with a horn. It may cause a one-hit KO." },
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." },
+            { name: "Agility", description: "The user becomes nimble to sharply raise its Speed stat." }
+        ]
+    },
+    "Staryu": { 
+        hp: 30, attack: 45, defense: 55, specialAttack: 70, specialDefense: 55, speed: 85,
+        type: "Water",
+        moves: [
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." },
+            { name: "Rapid Spin", description: "The user spins rapidly to attack. It may also remove any hazards on the field." },
+            { name: "Recover", description: "The user restores its HP by half of its maximum HP." },
+            { name: "Cosmic Power", description: "The user increases its Defense and Special Defense stats." }
+        ]
+    },
+    "Starmie": { 
+        hp: 60, attack: 75, defense: 85, specialAttack: 100, specialDefense: 85, speed: 115,
+        type: "Water",
+        moves: [
+            { name: "Surf", description: "The user attacks with a wave of water. It may also confuse the target." },
+            { name: "Psychic", description: "The user attacks with a powerful psychic force. It may also lower the target's Special Defense stat." },
+            { name: "Recover", description: "The user restores its HP by half of its maximum HP." },
+            { name: "Rapid Spin", description: "The user spins rapidly to attack. It may also remove any hazards on the field." }
+        ]
+    },
+    "Mr. Mime": { 
+        hp: 40, attack: 45, defense: 65, specialAttack: 100, specialDefense: 120, speed: 90,
+        type: "Psychic",
+        moves: [
+            { name: "Psychic", description: "The user attacks with a powerful psychic force. It may also lower the target's Special Defense stat." },
+            { name: "Substitute", description: "The user creates a decoy to take damage and protect itself." },
+            { name: "Encore", description: "The user forces the foe to repeat its last move." },
+            { name: "Reflect", description: "The user creates a barrier to reduce physical damage taken." }
+        ]
+    },
+    "Jynx": { 
+        hp: 65, attack: 50, defense: 35, specialAttack: 115, specialDefense: 95, speed: 95,
+        type: "Ice",
+        moves: [
+            { name: "Ice Beam", description: "The foe is blasted with a cold beam. It may also freeze the target." },
+            { name: "Lick", description: "The user attacks the foe with its tongue. It may also cause paralysis." },
+            { name: "Psychic", description: "The user attacks with a powerful psychic force. It may also lower the target's Special Defense stat." },
+            { name: "Lovely Kiss", description: "The user kisses the foe to put it to sleep." }
+        ]
+    },
+    "Electabuzz": { 
+        hp: 65, attack: 83, defense: 57, specialAttack: 95, specialDefense: 85, speed: 105,
+        type: "Electric",
+        moves: [
+            { name: "Thunderbolt", description: "The user attacks with a bolt of lightning. It may also paralyze the target." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Thunder Wave", description: "The user releases a wave of electricity that may paralyze the target." },
+            { name: "Shock Wave", description: "The user attacks with a wave of electricity that is guaranteed to hit." }
+        ]
+    },
+    "Magmar": { 
+        hp: 65, attack: 95, defense: 57, specialAttack: 100, specialDefense: 85, speed: 93,
+        type: "Fire",
+        moves: [
+            { name: "Fire Blast", description: "The user attacks with a blazing blast of fire. It may also cause burns." },
+            { name: "Confuse Ray", description: "The user shoots a ray that confuses the target." },
+            { name: "Flamethrower", description: "The user attacks with a blast of fire. It may also cause burns." },
+            { name: "Ember", description: "The user attacks with small flames. It may also cause burns." }
+        ]
+    },
+    "Pinsir": { 
+        hp: 65, attack: 125, defense: 100, specialAttack: 55, specialDefense: 70, speed: 85,
+        type: "Bug",
+        moves: [
+            { name: "Vice Grip", description: "The user clamps down on the foe with its pincers. It may also cause flinching." },
+            { name: "X-Scissor", description: "The user attacks with crossed scythes. It may also cause flinching." },
+            { name: "Harden", description: "The user hardens its body to raise its Defense stat." },
+            { name: "Fury Cutter", description: "The user attacks with a series of increasingly powerful cuts." }
+        ]
+    },
+    "Tauros": { 
+        hp: 75, attack: 100, defense: 95, specialAttack: 40, specialDefense: 70, speed: 110,
+        type: "Normal",
+        moves: [
+            { name: "Stampede", description: "The user charges at the foe to inflict damage. It may also cause flinching." },
+            { name: "Rock Slide", description: "The user drops rocks on the foe. It may also cause flinching." },
+            { name: "Return", description: "The user attacks with a move that gains power based on friendship." },
+            { name: "Earthquake", description: "The user causes a powerful quake that damages all Pokémon on the ground." }
+        ]
+    },
+    "Magikarp": { 
+        hp: 20, attack: 10, defense: 55, specialAttack: 15, specialDefense: 20, speed: 80,
+        type: "Water",
+        moves: [
+            { name: "Splash", description: "The user splashes around but does nothing." },
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." }
+        ]
+    },
+    "Eevee": { 
+        hp: 55, attack: 55, defense: 50, specialAttack: 45, specialDefense: 65, speed: 55,
+        type: "Normal",
+        moves: [
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Sand Attack", description: "The user throws sand in the foe's face to lower its accuracy." },
+            { name: "Bite", description: "The user bites with vicious fangs. It may make the target flinch." }
+        ]
+    },
+    "Vaporeon": { 
+        hp: 130, attack: 65, defense: 60, specialAttack: 110, specialDefense: 95, speed: 65,
+        type: "Water",
+        moves: [
+            { name: "Hydro Pump", description: "The foe is blasted by a huge volume of water launched under great pressure." },
+            { name: "Surf", description: "The user attacks with a wave of water. It may also confuse the target." },
+            { name: "Ice Beam", description: "The foe is blasted with a cold beam. It may also freeze the target." },
+            { name: "Water Gun", description: "The foe is blasted with a forceful shot of water." }
+        ]
+    },
+    "Jolteon": { 
+        hp: 65, attack: 65, defense: 60, specialAttack: 110, specialDefense: 95, speed: 130,
+        type: "Electric",
+        moves: [
+            { name: "Thunderbolt", description: "The user attacks with a bolt of lightning. It may also paralyze the target." },
+            { name: "Thunder Wave", description: "The user releases a wave of electricity that may paralyze the target." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." },
+            { name: "Volt Switch", description: "The user attacks with electricity and then switches out with another Pokémon." }
+        ]
+    },
+    "Flareon": { 
+        hp: 65, attack: 130, defense: 60, specialAttack: 95, specialDefense: 110, speed: 65,
+        type: "Fire",
+        moves: [
+            { name: "Fire Blast", description: "The user attacks with a blazing blast of fire. It may also cause burns." },
+            { name: "Flamethrower", description: "The user attacks with a blast of fire. It may also cause burns." },
+            { name: "Ember", description: "The user attacks with small flames. It may also cause burns." },
+            { name: "Quick Attack", description: "An almost invisibly fast attack that is certain to strike first." }
+        ]
+    },
+    "Porygon": { 
+        hp: 65, attack: 60, defense: 70, specialAttack: 85, specialDefense: 75, speed: 40,
+        type: "Normal",
+        moves: [
+            { name: "Tackle", description: "A physical attack in which the user charges and slams into the target with its whole body." },
+            { name: "Conversion", description: "The user changes its type to match the type of its current move." },
+            { name: "Psybeam", description: "The user attacks with a strange beam of psychic energy that may confuse the foe." },
+            { name: "Recover", description: "The user restores its HP by half of its maximum HP." }
+        ]
+    }
+}
+
+
+
+const typeColors = {
+            "Electric": "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+            "Fire": "linear-gradient(135deg, #f44336 0%, #e57373 100%)",
+            "Grass": "linear-gradient(135deg, #4caf50 0%, #81c784 100%)",
+            "Water": "linear-gradient(135deg, #2196f3 0%, #64b5f6 100%)",
+            "Normal": "linear-gradient(135deg, #a8a878 0%, #c6c6a7 100%)",
+            "Bug": "linear-gradient(135deg, #a8b820 0%, #c6d16e 100%)",
+            "Poison": "linear-gradient(135deg, #a040a0 0%, #d567d6 100%)",
+            "Flying": "linear-gradient(135deg, #a890f0 0%, #c6b7f5 100%)",
+            "Psychic": "linear-gradient(135deg, #f85888 0%, #ffa5e6 100%)",
+            "Rock": "linear-gradient(135deg, #b8a038 0%, #d1c17d 100%)",
+            "Ground": "linear-gradient(135deg, #e0c068 0%, #f1d8a5 100%)",
+            "Ice": "linear-gradient(135deg, #98d8d8 0%, #bce4e4 100%)",
+            "Dragon": "linear-gradient(135deg, #7038f8 0%, #a27dfa 100%)",
+            "Ghost": "linear-gradient(135deg, #705898 0%, #a292bc 100%)",
+            "Dark": "linear-gradient(135deg, #705848 0%, #a29274 100%)",
+            "Steel": "linear-gradient(135deg, #b8b8d0 0%, #d1d1e0 100%)",
+            "Fairy": "linear-gradient(135deg, #ee99ac 0%, #f4c1d2 100%)",
+        };
+
+
+        const backgroundColors = {
+            "Electric": "#f6d365",
+            "Fire": "#f44336",
+            "Grass": "#4caf50",
+            "Water": "#2196f3",
+            "Normal": "#a8a878",
+            "Bug": "#a8b820",
+            "Poison": "#a040a0",
+            "Flying": "#a890f0",
+            "Psychic": "#f85888",
+            "Rock": "#b8a038",
+            "Ground": "#e0c068",
+            "Ice": "#98d8d8",
+            "Dragon": "#7038f8",
+            "Ghost": "#705898",
+            "Dark": "#705848",
+            "Steel": "#b8b8d0",
+            "Fairy": "#ee99ac"
+        };
+
+        function searchPokemon() {
+            const pokemonNameInput = document.getElementById('pokemonName').value.trim().toLowerCase();
+            const pokemonName = Object.keys(pokemonStats).find(name => name.toLowerCase() === pokemonNameInput);
+
+            const pokemonData = pokemonStats[pokemonName];
+
+            if (pokemonData) {
+                let movesHtml = '';
+                if (pokemonData.moves) {
+                    movesHtml = pokemonData.moves.map(move => `
+                        <div>
+                            <strong>${move.name}:</strong> ${move.description}
+                        </div>
+                    `).join('');
+                }
+
+                const cardBackground = typeColors[pokemonData.type] || "linear-gradient(135deg, #f6d365 0%, #fda085 100%)";
+                const bodyBackgroundColor = backgroundColors[pokemonData.type] || "#fff";
+
+                document.body.style.backgroundColor = bodyBackgroundColor;
+
+                document.getElementById('pokemonStats').innerHTML = `
+                    <div class="card" style="background: ${cardBackground};">
+                        <div class="card-body">
+                            <img src="images/${pokemonName}.png" alt="${pokemonName}" class="pokemon-image">
+                            <h5 class="card-title">${pokemonName}</h5>
+                            <p class="card-text">
+                                <strong>HP:</strong> ${pokemonData.hp}<br>
+                                <strong>Attack:</strong> ${pokemonData.attack}<br>
+                                <strong>Defense:</strong> ${pokemonData.defense}<br>
+                                <strong>Special Attack:</strong> ${pokemonData.specialAttack}<br>
+                                <strong>Special Defense:</strong> ${pokemonData.specialDefense}<br>
+                                <strong>Speed:</strong> ${pokemonData.speed}
+                            </p>
+                            <h5>Moves</h5>
+                            <p class="card-text">
+                                ${movesHtml}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('pokemonStats').innerHTML = `
+                    <div class="alert alert-danger">
+                        Pokémon not found! Please try another name.
+                    </div>
+                `;
+                document.body.style.backgroundColor = "#fff";
+            }
+        }
+    </script>
+</body>
+</html>
