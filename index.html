@@ -6,11 +6,18 @@
     <title>PokeDuelHelp</title>
     <style>
         body {
+
             font-family: 'Roboto', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
             background-color: white;
+
         }
 
+        .Welcome{
+
+            text-align: center;
+        }
         .InstructorWrapper {
+
             width: 80vw;
             background-color: #EE8329;
             padding: 2vh 5vw;
@@ -23,6 +30,7 @@
         }
 
         .TitleBanner {
+
             width: 101vw;
             height: 25rem;
             background-position: center;
@@ -32,9 +40,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
+
         }
 
         .TitleBanner::before {
+
             content: "";
             position: absolute;
             background-image: url("pokemon-banner.png");
@@ -47,6 +57,7 @@
         }
 
         .TitleBanner::after {
+
             content: "";
             position: absolute;
             background-color: rgba(0, 0, 0, 0.5);
@@ -59,60 +70,62 @@
         }
 
         .headTitle {
+
             margin-left: -5%;
-            height: 10rem;
             width: 35vw;
             color: aliceblue;
             font-size: 10vw;
             text-align: center;
             font-family: 'Roboto', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         }
-
         .Instructions {
+
             color: aliceblue;
         }
 
         .Welcome {
+
             display: flex;
             justify-content: center;
             align-items: center;
             padding-top: 10px;
         }
 
+        .CardWrapper{
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .Welcome>h1 {
+
             font-size: 3em;
             padding: 0;
         }
 
         .ChariImage {
+
             margin-right: -10vw;
-            height: 30vw;
-            width: 30vw;
         }
 
         .ChariImage>img {
+
             height: 30vw;
             width: 30vw;
         }
 
         .BlastpicImage {
+
             margin-left: -10vw;
-            height: 30vw;
-            width: 30vw;
         }
 
         .BlastpicImage>img {
+
             height: 30vw;
             width: 30vw;
         }
-
-        .CardWrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
         .btn {
+
             background-color: #FF7B73;
             color: white;
             padding: 1em 5em;
@@ -157,11 +170,21 @@
             background-color: transparent;
             color: white;
             border: none;
-            margin-right: 33vw;
-            margin-left: 36vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
             
         }
+        .linkedin{
 
+            height: 40px;
+            width: 40px;
+            top: 2.5vh;
+            position: absolute;
+            right: 4vw;
+
+        }
         .FixedFooter {
 
             width: 101vw;
@@ -179,20 +202,19 @@
 
             display: flex;
             position: relative;
+            height: 16vh;
             align-items: center;
             border: 3px solid rgb(251, 42, 42);
             border-radius: 2em;
             width:89vw;
             margin-left:5vw;
             margin-top: 3em;
-            background-color: rgb(251, 110, 110);
-            
+            background-color: rgb(251, 110, 110);           
         }
         .DownloadPanelWrapper{
 
             width: 100vw;
-            justify-content: center;
-            
+            justify-content: center;   
         }
         #DownloadPanelTitle{
 
@@ -217,12 +239,12 @@
             
         }
         .DownloadButtonAni{
-            background-size:cover;
-            background-repeat: no-repeat;
+
+            
             background-size:cover;
             background-repeat: no-repeat;
             width: 9vw;
-            height: 15vh; 
+            height: 100%; 
             background-image: url('images/transperantPikachu.gif');
             display: none;
             
@@ -236,11 +258,109 @@
         
             display: block;
         }
+        .MobilePanel{
+
+            position: relative;
+            align-items: center;
+            border: 3px solid rgb(251, 42, 42);
+            border-radius: 2em;
+            width:89vw;
+            margin-left:5vw;
+            margin-top: 3em;
+            background-color: rgb(251, 110, 110);
+            display:none;
+        }
+        .MobilePanel > h3{
+
+            text-align: center;
+            padding: 0 5vw;
+            color: white;
+        }
+        @media screen and (max-width: 800px) {
+            
+            body{
+
+                margin: 0;
+                padding: 0;
+                margin-bottom: 10vh;
+            }
+            .InstructorWrapper{
+
+                font-size: 15px;
+            }
+            .DownloadPanel{
+
+                display: none;
+            }
+            .MobilePanel{
+
+                display: flex;
+            }
+            .CardWrapper{
+
+                flex-direction:  column-reverse;
+            }
+            #CardWrapperBlast{
+
+                flex-direction: column;
+            }
+            .BlastpicImage{
+
+                margin: 0%;
+            }
+            .BlastpicImage>img{
+
+                height: 40vw;
+                width: 40vw;
+            }
+            .ChariImage{
+
+                margin: 0;
+            }
+            .ChariImage>img{
+
+                height: 40vw;
+                width: 40vw;
+            }
+            .drop-button{
+
+                font-size: 2em;
+            }
+            .linkedin{
+
+                height: 25px;
+                width: 25px;
+                top:3vh;
+            }
+            .btn{
+
+                padding:2vw 4vw;
+                font-size: 15px;
+            }
+            #btn-wrapper{
+
+                display: flex;
+                justify-content: center;
+            }
+            
+        }
+        @media screen and (max-width:600px){
+            
+            .headTitle{
+
+                margin-left: 5vw;
+                width: 100lvw;
+                font-size: 75px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="TitleBanner">
         <span class="headTitle">PokéDuel</span>
+    </div>
+    <div class="MobilePanel">
+        <h3>Open this page on your Windows PC or Laptop to Download PokéDuel!!!</h3>
     </div>
     <div class="DownloadPanelWrapper">
         <div class="DownloadPanel">
@@ -260,6 +380,7 @@
             <h1>Welcome to PokéDuel!</h1>
         </div>
         <div class="CardWrapper">
+           
             <div class="Instructions">
                 <h2>Step into the world of Pokémon with PokéDuel, an exciting battle game featuring the original 151 Pokémon from Generation 1. Here's how to get started:</h2>
                 <h3>1) Choose Your Pokémon: Select your favorite Pokémon from the Gen 1 roster to be your battle companion.</h3>
@@ -277,7 +398,7 @@
         <div class="Welcome">
             <h1>About Pokémon</h1>
         </div>
-        <div class="CardWrapper">
+        <div class="CardWrapper" id="CardWrapperBlast">
             <div class="BlastpicImage">
                 <img src="Blastpic.png" alt="Blastoise">
             </div>
@@ -297,12 +418,19 @@
         <div class="Welcome">
             <h1>Pokémon and their Attacks</h1>
         </div>
+       
+      
         <div class="CardWrapper">
+            
+            
             <div class="Instructions">
                 <h2>In the world of Pokémon, each creature has a unique set of moves they can learn. These moves fall into different categories and types, affecting how they perform in battle.</h2>
                 <h2>Below are some sources to get information about Pokémon and their attacks:</h2>
+                <div id="btn-wrapper">
                 <button class="btn" onclick="navigateToAttackPage()">Attacks</button>
                 <button class="btn" onclick="navigateToPokemonPage()">Pokémon</button>
+                </div>
+                
             </div>
             <div class="ChariImage">
                 <img src="Venupic.png" alt="Venusaur">
@@ -311,9 +439,9 @@
     </div>
 
     <div class="FixedFooter">
-        <button class="drop-button">PokéDuel</button>
+        <button class="drop-button">PokéDuel<span style="font-size: x-small;">click here!</span></button>
         <a href="https://linkedin.com/in/varad-marne-a1a840293" target="_blank">
-            <img src="images/linkedin.svg" alt="LinkedIn" style="width: 40px; height: 40px;">
+            <img src="images/linkedin.svg" alt="LinkedIn" class="linkedin">
           </a>
           
     </div>
@@ -412,7 +540,7 @@
         // Handle window resize
         window.addEventListener('resize', () => {
             render.canvas.width = window.innerWidth;
-            render.canvas.height = window.innerHeight - 11 * window.innerHeight / 100; // Adjust height to avoid footer
+            render.canvas.height = Document.querySelector('.Fixed-Footer').style.height; // Adjust height to avoid footer
             Matter.Body.setPosition(ground, { x: window.innerWidth / 2, y: window.innerHeight - 50 });
         });
 
